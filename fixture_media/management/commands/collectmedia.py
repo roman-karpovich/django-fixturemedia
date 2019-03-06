@@ -1,9 +1,9 @@
 import os
-from shutil import copy
 
 from django.core.management.base import CommandError, BaseCommand
 
 from django.apps import apps
+from django.core.files.storage import default_storage
 from optparse import make_option
 
 from ._utils import file_patt, file_patt_prefixed
@@ -71,4 +71,5 @@ class Command(BaseCommand):
                     if not os.path.exists(dest_dir):
                         os.makedirs(dest_dir)
                     self.stdout.write('Copied %s to %s\n' % (fp, final_dest))
-                    copy(fixture_path, final_dest)
+                    with open(fixture_path, 'rb') as f:
+                        default_storage.save(fp, f)
